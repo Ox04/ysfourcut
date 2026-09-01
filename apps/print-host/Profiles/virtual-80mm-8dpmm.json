@@ -1,0 +1,21 @@
+{
+  "profileId": "virtual-80mm-8dpmm",
+  "kind": "virtual",
+  "displayName": "가상 영수증 80mm",
+  "paper": {
+    "paperWidthDots": 640,
+    "contentWidthDots": 576,
+    "sideMarginDots": 32,
+    "leadingFeedDots": 24,
+    "trailingFeedDots": 64,
+    "dotsPerMmX": 8,
+    "dotsPerMmY": 8,
+    "cutStyle": "straight"
+  },
+  "limits": {
+    "maxContentWidthDots": 576,
+    "maxContentHeightDots": 4096,
+    "maxDecodedBytes": 524288
+  },
+  "notes": "가상 프로필 · AHAPOS 미검증. 배치 기준은 정수 dot이며 mm 값은 설명용이다. 상한은 서비스 안전 기본값이지 장치 사양이 아니다."
+}

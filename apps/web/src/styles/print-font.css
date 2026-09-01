@@ -1,0 +1,11 @@
+/* 인쇄 원본(최종 비트맵)에 그리는 글자 전용 폰트.
+   화면 UI 폰트(--font-sans)와 분리한다. 출처·라이선스는 src/assets/fonts/README.md. */
+
+@font-face {
+  font-family: 'YSFourcutPrintKR';
+  src: url('../assets/fonts/NotoSansCJKkr-Bold-hangul-subset.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  /* 로딩 전에 대체 글꼴로 합성하지 않도록 표시를 미룬다. 합성은 fonts.ts가 로딩 완료 후에만 한다. */
+  font-display: block;
+}

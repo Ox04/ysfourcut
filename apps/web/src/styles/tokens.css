@@ -1,0 +1,70 @@
+/* YS Fourcut 디자인 토큰 (07번에서 확정한 단일 방향: 영수증 티켓 키오스크)
+   원칙: 밝은 종이색 배경 + 검정 글자 + 포인트 색 하나(셔터 레드).
+   사진과 서버가 만든 영수증이 화면의 중심이고, 장식은 절취선 모티프 하나만 쓴다.
+   후속 작업(08~12)은 이 토큰을 재사용하고 임의로 재정의하지 않는다. docs/UI_DESIGN.md 참고. */
+
+:root {
+  /* 색 — 종이와 잉크 */
+  --paper: #f4efe4; /* 앱 배경. 서버 영수증 종이(#faf7f1)보다 살짝 어두워 결과가 도드라진다 */
+  --paper-raised: #fdfbf5; /* 패널·카드 */
+  --paper-sunken: #ebe4d4; /* 눌린 영역, 썸네일 빈 슬롯 */
+  --ink: #211d16; /* 본문. paper 대비 ≈ 14:1 */
+  --ink-soft: #5c564b; /* 보조 문구. paper 대비 ≈ 6.3:1 */
+  --ink-faint: #8a8375; /* 비활성. 큰 글자·장식용만 (본문 금지) */
+  --line: #d8d0bd; /* 실선 구분 */
+  --line-strong: #b7ae97;
+
+  /* 포인트 색 하나 — 셔터 레드 */
+  --accent: #bc3a14; /* 흰 글자 대비 ≈ 5.6:1 */
+  --accent-press: #9c2e0e;
+  --accent-tint: #f7e3da; /* 포인트 배경 틴트 */
+
+  /* 상태색 (배지·문구 전용, 면적을 크게 쓰지 않는다) */
+  --ok: #2c6e3f; /* paper 대비 ≈ 5.6:1 */
+  --warn: #8a5a00;
+  --danger-text: #9c2e0e;
+  --danger-tint: #f7ddd5;
+
+  /* 결과 뷰어 받침 — appearance PNG는 배경이 투명하고 그림자를 포함하므로 중간톤 위에 올린다 */
+  --viewer-bg: #57524a;
+  --viewer-bg-deep: #45413a;
+
+  /* 타이포그래피 — 외부 폰트 없이 시스템 한국어 스택 */
+  --font-sans:
+    'Pretendard Variable', Pretendard, 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo',
+    system-ui, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', Consolas, monospace; /* dot·mm 수치 전용 */
+
+  --text-display: 2.5rem; /* 40px — 시작 화면 제목, 카운트다운 보조 */
+  --text-title: 1.5rem; /* 24px — 화면 제목 */
+  --text-body-lg: 1.125rem; /* 18px — 키오스크 기본 본문 */
+  --text-body: 1rem;
+  --text-small: 0.875rem; /* 14px — 배지·보조 */
+
+  /* 간격 (4 기준) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+
+  /* 모서리·그림자 */
+  --radius-btn: 14px;
+  --radius-panel: 20px;
+  --radius-thumb: 10px;
+  --shadow-panel: 0 1px 2px rgba(33 29 22 / 8%), 0 6px 24px rgba(33 29 22 / 7%);
+  --shadow-pop: 0 2px 6px rgba(33 29 22 / 18%), 0 14px 40px rgba(33 29 22 / 16%);
+
+  /* 터치·포커스 */
+  --touch-min: 48px; /* 주요 터치 영역 최소 */
+  --touch-lg: 60px; /* 촬영 시작·가상 출력 등 핵심 버튼 */
+  --focus-ring: 0 0 0 3px var(--paper), 0 0 0 6px var(--accent);
+
+  /* 동작 — reduced-motion에서 base.css가 무효화한다 */
+  --dur-quick: 140ms;
+  --dur-slide: 420ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.3, 1);
+}

@@ -1,0 +1,69 @@
+/* 기본 규칙: 리셋·타이포·포커스·동작 줄이기. 화면별 스타일은 booth.css. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-body-lg);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  /* 한국어 어절이 중간에 끊기지 않게 한다. 아주 긴 값은 anywhere로 흘린다. */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+h1,
+h2,
+h3,
+p,
+figure,
+fieldset {
+  margin: 0;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+/* 키보드 포커스는 어디서나 같은 고리로 보인다 */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-btn);
+}
+
+::selection {
+  background: var(--accent-tint);
+}
+
+/* 동작 줄이기: 배출·전환·카운트다운 링 등 모든 장식 동작을 끈다.
+   상태 변화 자체(문구·이미지 교체)는 그대로 전달된다. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Version>0.6.0</Version>
+    <RootNamespace>YsFourcut.Host</RootNamespace>
+    <!-- 렌더링 패키지와 Skia 네이티브 자산 버전을 packages.lock.json으로 고정한다. -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 가상 프린터 프리셋. 참조하는 테스트 프로젝트 출력에도 함께 복사된다.
+         Web SDK가 json을 이미 Content로 포함하므로 Update로 복사 규칙만 바꾼다. -->
+    <Content Update="Profiles\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CrossEscPos.Rendering.Skia" Version="1.2.0" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,23 @@
+{
+  "name": "ysfourcut",
+  "private": true,
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=24.19.0 <25.0.0"
+  },
+  "workspaces": [
+    "apps/web",
+    "packages/imaging"
+  ],
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "npm run build --workspace apps/web",
+    "build:host": "node scripts/dotnet.mjs build apps/print-host/YsFourcut.Host.csproj",
+    "package:win": "node scripts/package-win.mjs",
+    "typecheck": "npm run typecheck --workspace packages/imaging && npm run typecheck --workspace apps/web",
+    "lint": "npm run lint --workspace apps/web",
+    "test": "npm run test --workspace packages/imaging && npm run test --workspace apps/web",
+    "test:host": "node scripts/dotnet.mjs test tests/print-host/YsFourcut.Host.Tests.csproj",
+    "test:all": "npm run test && npm run test:host"
+  }
+}

@@ -1,0 +1,27 @@
+node_modules/
+dist/
+coverage/
+
+# .NET
+apps/print-host/bin/
+apps/print-host/obj/
+apps/print-host/wwwroot/
+tests/print-host/**/bin/
+tests/print-host/**/obj/
+
+# 사진/영수증 산출물은 저장소에 두지 않는다 (AGENTS.md 개인정보 규칙).
+*.png
+!docs/**/*.png
+
+*.log
+.DS_Store
+
+# OMC 실행 상태/프롬프트는 로컬에만 보관한다. 공유용 skill은 예외다.
+.omc/*
+!.omc/skills/
+.claude/settings.local.json
+
+# Claude/GitHub MCP의 로컬 인증 설정은 커밋하지 않는다.
+.mcp.json
+.env
+.env.*
