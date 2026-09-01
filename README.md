@@ -96,6 +96,7 @@ npm run dev
 - `docs/PRINTER_REFERENCE.md` — AHAPOS 실물 프린터에 대해 확인된 사실과 아직 확인하지 못한 항목.
 - `docs/VALIDATION.md` — 11번 통합 검수의 WSL 자동/헤드리스/격리 호스트 근거와 Windows·실물 NOT_RUN 목록.
 - `docs/HARDWARE_CHECKLIST.md` — 후속 AHAPOS 실물 검수(90/91번)용 체크리스트. 아직 미체크.
+- `docs/GITHUB_WORKFLOW.md` — Claude Code/OMC의 작업 브랜치, commit·push·PR·CI와 공식 GitHub MCP 연결 절차.
 
 이 저장소는 `tasks/NN.md` 단위로 진행하며, 완료 상태는 `tasks/PROGRESS.md`에 기록한다.
 

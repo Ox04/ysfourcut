@@ -68,5 +68,5 @@ OMC v5 계열은 Fable 모델 별칭 처리를 추가했지만 설치된 버전�
 - 재개 기준은 저장소의 `tasks/PROGRESS.md`와 `tasks/handoffs/NN.md`다. OMC 내부 상태가 완료여도 프로젝트 AC가 미검증이면 done이 아니다.
 - `.omc/` 내부 상태/PRD/잠금 파일은 플러그인 소유다. 문서 준비 과정에서 가짜 실행 상태나 `passes: true`를 만들지 않는다. 이 프로젝트용 별도 루트 `prd.json`도 만들지 않았다.
 - OMC 런타임 기록에는 프롬프트/경로가 포함될 수 있다. `.gitignore`에 로컬 상태 제외를 추가한다. Git 밖에서 실행할 때 상태 위치는 설치된 OMC가 정한 경로를 확인하고 `.omc/`라고 추측하지 않는다. [공식 상태 저장 설명](https://github.com/Yeachan-Heo/oh-my-claudecode#omc-state-and-git)
-- 모델별 자동 라우팅 설정, 추가 과금, 외부 Codex/Gemini 호출, 무제한 병렬/반복, 자동 커밋·푸시·배포는 설정하지 않았다. 숫자 상한은 문서 운영 규칙이지 실행을 강제로 차단하는 프로그램이 아니다.
+- 모델별 자동 라우팅 설정, 추가 과금, 외부 Codex/Gemini 호출, 무제한 병렬/반복, 자동 merge·release·배포는 설정하지 않았다. 번호형 작업은 bootstrap 이후 `docs/GITHUB_WORKFLOW.md`에 따라 전용 브랜치 commit·push·PR·CI 확인까지 수행한다. 숫자 상한은 문서 운영 규칙이지 실행을 강제로 차단하는 프로그램이 아니다.
 - `/ys-task`로 06/07 구현·검수가 수행된 기록은 각 handoff에 있다. `/ys-series` 연속 실행은 아직 실제 Claude 세션에서 호출하지 않았다. 명령 작성 과정에서 앱 빌드·서버 조작·진행표 변경을 하지 않았으며 명령 구조와 문서 링크만 검증한다.

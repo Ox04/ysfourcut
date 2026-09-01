@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "/usr/sbin/docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-p",
+        "127.0.0.1:8085:8085",
+        "-e",
+        "GITHUB_OAUTH_CALLBACK_PORT",
+        "-e",
+        "GITHUB_OAUTH_SCOPES",
+        "-e",
+        "GITHUB_TOOLSETS",
+        "-e",
+        "GITHUB_EXCLUDE_TOOLS",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_OAUTH_CALLBACK_PORT": "8085",
+        "GITHUB_OAUTH_SCOPES": "repo",
+        "GITHUB_TOOLSETS": "context,repos,pull_requests,actions",
+        "GITHUB_EXCLUDE_TOOLS": "merge_pull_request"
+      }
+    }
+  }
+}
