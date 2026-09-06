@@ -225,6 +225,37 @@
   animation: ds-drop 140ms cubic-bezier(0.2, 0.8, 0.3, 1);
 }
 
+/* 듀얼 키캡: 기본 글자 중앙 + Shift 기호는 오른쪽 위에 연하게 상주.
+   Shift가 켜지면 둘이 자리를 바꾼다 — 원래 글자는 모서리로 축소·연해질 뿐 사라지지 않는다.
+   상태 기반 transition이라 reduced-motion에서 꺼져도 최종 상태는 그대로다. */
+.ds-key {
+  position: relative;
+}
+
+.ds-key__main,
+.ds-key__sub {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 140ms cubic-bezier(0.2, 0.8, 0.3, 1),
+    opacity 140ms cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.ds-key__sub,
+.ds-key[data-shifted] .ds-key__main {
+  transform: translate(26%, -24%) scale(0.55);
+  opacity: 0.4;
+}
+
+.ds-key[data-shifted] .ds-key__sub,
+.ds-key__main {
+  transform: none;
+  opacity: 1;
+}
+
 /* 키캡 글자 전환 (Shift/Caps로 표시가 바뀔 때 remount되어 실행) */
 @keyframes ds-keycap {
   from {

@@ -521,21 +521,37 @@ export function Keyboard({
               className={cx(
                 'flex min-h-12 items-center justify-center border font-medium disabled:cursor-not-allowed disabled:text-disabled',
                 def.action && def.action !== 'backspace' ? 'text-label' : 'text-body',
+                def.shift && 'ds-key',
                 // bg/border는 상태별로 분기 — 같은 속성 유틸리티를 겹치면 순서가 보장되지 않는다
                 isOn(def)
                   ? 'border-ink bg-ink text-on-ink hover:bg-ink-hover'
                   : 'border-line-strong bg-layer hover:bg-sunken',
               )}
               disabled={disabled}
+              data-shifted={def.shift && shift ? true : undefined}
               aria-pressed={def.action === 'shift' || def.action === 'caps' ? isOn(def) : undefined}
-              aria-label={def.action === 'backspace' ? '한 글자 지우기' : undefined}
+              aria-label={
+                def.action === 'backspace' ? '한 글자 지우기' : def.shift ? capFor(def) : undefined
+              }
               onPointerDown={keepFocus}
               onClick={() => press(def)}
             >
-              {/* 키캡: 표시 글자가 바뀌면 remount되어 ds-keycap 전환 동작이 돈다 */}
-              <span key={capFor(def)} className="ds-keycap">
-                {capFor(def)}
-              </span>
+              {def.shift ? (
+                <>
+                  {/* 듀얼 키캡: 기본 글자 중앙, Shift 기호는 오른쪽 위에 상주(스타일은 ds.css) */}
+                  <span className="ds-key__main" aria-hidden="true">
+                    {def.label}
+                  </span>
+                  <span className="ds-key__sub" aria-hidden="true">
+                    {def.shift}
+                  </span>
+                </>
+              ) : (
+                /* 단일 키캡: 표시 글자가 바뀌면 remount되어 ds-keycap 전환 동작이 돈다 */
+                <span key={capFor(def)} className="ds-keycap">
+                  {capFor(def)}
+                </span>
+              )}
             </button>
           ))}
         </div>
