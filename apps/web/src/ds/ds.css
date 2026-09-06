@@ -1,0 +1,222 @@
+/* YS Fourcut 디자인 시스템 v2 (개편안 데모 전용 진입 CSS).
+   방향: Carbon/Amplify류 — 모서리 0, 그림자 대신 1px 경계선, 모노크롬 + 셔터 레드.
+   운영 화면(07/12번 산출물)과 공존하기 위해 preflight는 넣지 않고(.ds-root에 최소 리셋만),
+   실제 웹사이트 적용 단계에서 preflight 전환 + 구 tokens.css 제거를 함께 한다.
+
+   토큰 계층:
+   1) 원시 팔레트  --ds-gray-*, --ds-red-*  — 값의 원천, 테마와 무관
+   2) 시맨틱      --ds-bg, --ds-text …     — [data-ds-theme]별로 재정의, 컴포넌트는 이것만 참조
+   3) Tailwind    @theme inline --color-* → 시맨틱 var 매핑 — 유틸리티(bg-layer 등) 생성
+   색·폰트를 바꿀 때는 2)의 시맨틱 값 또는 @theme의 --font-* 한 곳만 바꾸면 전체에 적용된다.
+
+   cascade layer를 쓰지 않는다: 구 base.css가 무계층이라 layer 안의 유틸리티를 이겨버린다.
+   데모 CSS도 무계층 + 아래 리셋은 :where()(특이도 0)로 두어 유틸리티가 항상 이긴다. */
+@import 'tailwindcss/theme.css';
+@import 'tailwindcss/utilities.css';
+
+/* 화면 UI 폰트. 인쇄 원본 폰트(print-font.css)와 별개다. 라이선스: assets/fonts/README.md */
+@font-face {
+  font-family: 'Wanted Sans Variable';
+  src: url('../assets/fonts/WantedSansVariable.woff2') format('woff2-variations');
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* inline 필수: --color-* 가 --ds-* 를 참조하므로, 유틸리티에 var(--ds-*)를 직접 심어
+   .ds-root/[data-ds-theme]의 요소별 재정의가 살아나게 한다(:root에서 선평가되면 무효). */
+@theme inline {
+  /* Tailwind 기본 팔레트·라운드·그림자를 비워 시스템 밖 값 사용을 차단한다. */
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+
+  --font-sans:
+    'Wanted Sans Variable', 'Pretendard Variable', Pretendard, 'Noto Sans KR', 'Malgun Gothic',
+    'Apple SD Gothic Neo', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /* 타입 스케일 — 4px 그리드 정렬. 키오스크 기본 본문은 body-lg(18px) 유지 */
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.35;
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.4;
+  --text-body: 1rem;
+  --text-body--line-height: 1.5;
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.5;
+  --text-heading: 1.25rem;
+  --text-heading--line-height: 1.4;
+  --text-title: 1.75rem;
+  --text-title--line-height: 1.25;
+  --text-title--letter-spacing: -0.01em;
+  --text-display: 2.625rem;
+  --text-display--line-height: 1.15;
+  --text-display--letter-spacing: -0.015em;
+
+  /* 시맨틱 색 → 유틸리티. 값은 아래 테마 블록의 --ds-* 가 결정한다. */
+  --color-bg: var(--ds-bg);
+  --color-layer: var(--ds-layer);
+  --color-sunken: var(--ds-sunken);
+  --color-field: var(--ds-field);
+  --color-text: var(--ds-text);
+  --color-soft: var(--ds-soft);
+  --color-disabled: var(--ds-disabled);
+  --color-line: var(--ds-line);
+  --color-line-strong: var(--ds-line-strong);
+  --color-ink: var(--ds-ink);
+  --color-ink-hover: var(--ds-ink-hover);
+  --color-on-ink: var(--ds-on-ink);
+  --color-accent: var(--ds-accent);
+  --color-accent-hover: var(--ds-accent-hover);
+  --color-accent-tint: var(--ds-accent-tint);
+  --color-on-accent: var(--ds-on-accent);
+  --color-ok: var(--ds-ok);
+  --color-warn: var(--ds-warn);
+  --color-danger: var(--ds-danger);
+  --color-danger-tint: var(--ds-danger-tint);
+  --color-focus: var(--ds-focus);
+  --color-viewer: var(--ds-viewer);
+  --color-viewer-deep: var(--ds-viewer-deep);
+}
+
+/* ── 원시 팔레트 + 시맨틱 기본값(cool 테마) ───────────────────── */
+.ds-root {
+  /* 중립 그레이 램프 (Carbon gray 계열) */
+  --ds-gray-0: #ffffff;
+  --ds-gray-10: #f4f4f4;
+  --ds-gray-20: #e0e0e0;
+  --ds-gray-30: #c6c6c6;
+  --ds-gray-40: #a8a8a8;
+  --ds-gray-50: #8d8d8d;
+  --ds-gray-60: #6f6f6f;
+  --ds-gray-70: #525252;
+  --ds-gray-80: #393939;
+  --ds-gray-90: #262626;
+  --ds-gray-100: #161616;
+
+  /* 셔터 레드 — 브랜드 포인트 색 하나 */
+  --ds-red-60: #bc3a14; /* 흰 글자 대비 ≈ 5.6:1 */
+  --ds-red-70: #9c2e0e;
+  --ds-red-30: #ff7e5e; /* 다크 테마용, #161616 글자 대비 ≈ 6.8:1 */
+  --ds-red-40: #e8663f;
+
+  --ds-bg: var(--ds-gray-0);
+  --ds-layer: var(--ds-gray-10);
+  --ds-sunken: var(--ds-gray-20);
+  --ds-field: var(--ds-gray-10);
+  --ds-text: var(--ds-gray-100);
+  --ds-soft: var(--ds-gray-70);
+  --ds-disabled: var(--ds-gray-40);
+  --ds-line: var(--ds-gray-20);
+  --ds-line-strong: var(--ds-gray-50);
+  --ds-ink: var(--ds-gray-100);
+  --ds-ink-hover: var(--ds-gray-80);
+  --ds-on-ink: var(--ds-gray-0);
+  --ds-accent: var(--ds-red-60);
+  --ds-accent-hover: var(--ds-red-70);
+  --ds-accent-tint: #f9e5dd;
+  --ds-on-accent: #ffffff;
+  --ds-ok: #2c6e3f;
+  --ds-warn: #8a5a00;
+  --ds-danger: var(--ds-red-70);
+  --ds-danger-tint: #f9e0d8;
+  --ds-focus: var(--ds-gray-100);
+  --ds-viewer: var(--ds-gray-70);
+  --ds-viewer-deep: var(--ds-gray-80);
+}
+
+/* warm — 현재 운영 중인 종이색 정체성 유지안 (07/12번 값 재사용) */
+.ds-root[data-ds-theme='warm'] {
+  --ds-bg: #f4efe4;
+  --ds-layer: #fdfbf5;
+  --ds-sunken: #ebe4d4;
+  --ds-field: #fdfbf5;
+  --ds-text: #211d16;
+  --ds-soft: #5c564b;
+  --ds-disabled: #8a8375;
+  --ds-line: #d8d0bd;
+  --ds-line-strong: #b7ae97;
+  --ds-ink: #211d16;
+  --ds-ink-hover: #3a352b;
+  --ds-on-ink: #fdfbf5;
+  --ds-accent-tint: #f7e3da;
+  --ds-danger-tint: #f7ddd5;
+  --ds-focus: #211d16;
+  --ds-viewer: #57524a;
+  --ds-viewer-deep: #45413a;
+}
+
+/* dark — 짙은 그레이 키오스크안. primary 버튼은 반전(밝은 면 + 짙은 글자) */
+.ds-root[data-ds-theme='dark'] {
+  --ds-bg: var(--ds-gray-100);
+  --ds-layer: var(--ds-gray-90);
+  --ds-sunken: var(--ds-gray-80);
+  --ds-field: var(--ds-gray-90);
+  --ds-text: var(--ds-gray-10);
+  --ds-soft: var(--ds-gray-30);
+  --ds-disabled: var(--ds-gray-60);
+  --ds-line: var(--ds-gray-80);
+  --ds-line-strong: var(--ds-gray-60);
+  --ds-ink: var(--ds-gray-10);
+  --ds-ink-hover: var(--ds-gray-20);
+  --ds-on-ink: var(--ds-gray-100);
+  --ds-accent: var(--ds-red-30);
+  --ds-accent-hover: var(--ds-red-40);
+  --ds-accent-tint: #3a221a;
+  --ds-on-accent: var(--ds-gray-100);
+  --ds-ok: #42be65;
+  --ds-warn: #d2a106;
+  --ds-danger: #ff8262;
+  --ds-danger-tint: #3a221a;
+  --ds-focus: var(--ds-gray-10);
+  --ds-viewer: var(--ds-gray-80);
+  --ds-viewer-deep: var(--ds-gray-90);
+}
+
+/* ── 데모 공존용 최소 리셋 ─────────────────────────────────────
+   :where()로 특이도 0을 유지해 유틸리티·구 base.css 어느 쪽도 방해하지 않는다.
+   실제 적용 단계에서 tailwindcss/preflight.css로 교체하고 이 블록을 지운다. */
+:where(.ds-root),
+:where(.ds-root *, .ds-root *::before, .ds-root *::after) {
+  box-sizing: border-box;
+}
+
+:where(.ds-root) {
+  margin: 0;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+}
+
+:where(.ds-root) :where(h1, h2, h3, h4, p, ul, ol, figure) {
+  margin: 0;
+  padding: 0;
+}
+
+:where(.ds-root) :where(button, input) {
+  font: inherit;
+  color: inherit;
+  border: 0;
+  background: none;
+  padding: 0;
+}
+
+:where(.ds-root) :where(button:not(:disabled)) {
+  cursor: pointer;
+}
+
+/* 구 base.css의 둥근 focus-ring(box-shadow)을 무효화하고 각진 outline으로 교체.
+   특이도(0,2,0)로 구 규칙(:focus-visible, 0,1,0)을 이긴다. */
+.ds-root :focus-visible {
+  outline: 2px solid var(--ds-focus);
+  outline-offset: 2px;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.ds-root *, .ds-root *::before, .ds-root *::after) {
+    transition: none !important;
+    animation: none !important;
+  }
+}

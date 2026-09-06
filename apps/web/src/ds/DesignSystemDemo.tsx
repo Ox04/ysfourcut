@@ -1,0 +1,245 @@
+import { useEffect, useRef, useState } from 'react';
+import './ds.css';
+import {
+  Button,
+  Countdown,
+  CutProgress,
+  Panel,
+  SegmentedControl,
+  SliderField,
+  StatusBadge,
+  TextField,
+} from './components';
+
+/* 디자인 시스템 v2 데모 — 개발 전용(#design 해시). 운영 번들에는 들어가지 않는다.
+   목적: 실제 화면 적용 전에 토큰·컴포넌트만 따로 최종 검수한다.
+   상단 스위처로 cool(기본)/warm(현행 종이색)/dark 세 배경안을 비교한다. */
+
+type Theme = 'cool' | 'warm' | 'dark';
+
+const THEMES: { value: Theme; label: string }[] = [
+  { value: 'cool', label: '1 쿨 그레이' },
+  { value: 'warm', label: '2 종이색' },
+  { value: 'dark', label: '3 다크' },
+];
+
+/* 시맨틱 토큰 → 데모에 보여줄 이름 순서. ds.css의 --ds-* 와 1:1 */
+const COLOR_TOKENS = [
+  'bg',
+  'layer',
+  'sunken',
+  'field',
+  'text',
+  'soft',
+  'disabled',
+  'line',
+  'line-strong',
+  'ink',
+  'ink-hover',
+  'on-ink',
+  'accent',
+  'accent-hover',
+  'accent-tint',
+  'on-accent',
+  'ok',
+  'warn',
+  'danger',
+  'danger-tint',
+  'focus',
+  'viewer',
+  'viewer-deep',
+] as const;
+
+const TYPE_SCALE = [
+  { cls: 'text-display', name: 'display · 42', sample: '네컷 사진' },
+  { cls: 'text-title', name: 'title · 28', sample: '촬영을 시작할까요?' },
+  { cls: 'text-heading', name: 'heading · 20', sample: '프린터 프로필' },
+  { cls: 'text-body-lg', name: 'body-lg · 18 (키오스크 본문)', sample: '정면을 바라보고 자세를 잡아 주세요.' },
+  { cls: 'text-body', name: 'body · 16', sample: '가상 영수증을 만드는 중이에요. 잠시만 기다려 주세요.' },
+  { cls: 'text-label', name: 'label · 14', sample: '가상 출력 · AHAPOS 미검증' },
+  { cls: 'text-caption', name: 'caption · 12', sample: '576 × 1788 dot · 203.2 DPI' },
+] as const;
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="flex flex-col gap-4">
+      <h2 className="border-b border-line pb-2 text-heading font-bold">{title}</h2>
+      {children}
+    </section>
+  );
+}
+
+export default function DesignSystemDemo() {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [theme, setTheme] = useState<Theme>('cool');
+  const [resolved, setResolved] = useState<Record<string, string>>({});
+  const [frame, setFrame] = useState<'basic' | 'date'>('basic');
+  const [brightness, setBrightness] = useState(0);
+  const [caption, setCaption] = useState('');
+
+  // 검수용: 현재 테마에서 각 토큰이 실제로 어떤 값인지 hex로 표시한다.
+  useEffect(() => {
+    if (!rootRef.current) return;
+    const style = getComputedStyle(rootRef.current);
+    setResolved(
+      Object.fromEntries(
+        COLOR_TOKENS.map((name) => [name, style.getPropertyValue(`--ds-${name}`).trim()]),
+      ),
+    );
+  }, [theme]);
+
+  return (
+    <div
+      ref={rootRef}
+      className="ds-root min-h-screen bg-bg font-sans text-body text-text"
+      data-ds-theme={theme}
+    >
+      <header className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-4 border-b border-line bg-bg px-8 py-4">
+        <div>
+          <h1 className="text-heading font-bold">YS Fourcut 디자인 시스템 v2</h1>
+          <p className="text-caption text-soft">
+            모서리 0 · 경계선 구획 · 모노크롬 + 셔터 레드 · Wanted Sans
+          </p>
+        </div>
+        <SegmentedControl label="배경안 비교" options={THEMES} value={theme} onChange={setTheme} />
+      </header>
+
+      <main className="mx-auto flex max-w-5xl flex-col gap-12 px-8 py-10">
+        <Section title="색 토큰">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-1 sm:grid-cols-3 lg:grid-cols-4">
+            {COLOR_TOKENS.map((name) => (
+              <div key={name} className="flex items-center gap-3 py-1">
+                <span
+                  className="size-8 shrink-0 border border-line"
+                  style={{ background: `var(--ds-${name})` }}
+                />
+                <span className="flex flex-col">
+                  <code className="text-label">--ds-{name}</code>
+                  <code className="text-caption text-soft">{resolved[name]}</code>
+                </span>
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        <Section title="타이포그래피">
+          <div className="flex flex-col gap-3">
+            {TYPE_SCALE.map((row) => (
+              <div key={row.cls} className="flex flex-wrap items-baseline gap-x-6 gap-y-1">
+                <code className="w-56 shrink-0 text-caption text-soft">{row.name}</code>
+                <span className={`${row.cls} font-semibold`}>{row.sample}</span>
+              </div>
+            ))}
+            <p className="text-caption text-soft">
+              숫자·치수는 font-mono: <code className="font-mono">640 × 1876 px · 80 × 234.5 mm</code>
+            </p>
+          </div>
+        </Section>
+
+        <Section title="버튼">
+          <div className="flex flex-wrap items-center gap-4">
+            <Button variant="accent" size="lg">
+              촬영 시작
+            </Button>
+            <Button variant="primary" size="lg">
+              가상 출력
+            </Button>
+            <Button variant="primary">다음 촬영</Button>
+            <Button variant="secondary">PNG 저장</Button>
+            <Button variant="ghost">다시 확인</Button>
+            <Button variant="primary" disabled>
+              전송 중…
+            </Button>
+            <Button variant="secondary" disabled>
+              비활성
+            </Button>
+          </div>
+          <p className="text-caption text-soft">
+            accent(셔터 레드)는 촬영 시작·출력 같은 핵심 순간 전용, 나머지 동작은 모노크롬.
+            md 48px / lg 60px 터치 크기. 포커스 링은 Tab으로 확인.
+          </p>
+        </Section>
+
+        <Section title="상태 배지">
+          <div className="flex flex-wrap gap-3">
+            <StatusBadge tone="virtual">가상 출력 모드</StatusBadge>
+            <StatusBadge tone="ok">카메라 준비됨</StatusBadge>
+            <StatusBadge tone="warn">프로필 미검증</StatusBadge>
+            <StatusBadge tone="danger">출력 실패</StatusBadge>
+            <StatusBadge tone="neutral">대기 중</StatusBadge>
+          </div>
+        </Section>
+
+        <Section title="패널">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <Panel title="기본 패널">
+              <p className="text-body-lg">
+                그림자 없이 1px 경계선으로 구획한다. 배경은 layer, 눌린 영역은 sunken.
+              </p>
+              <div className="flex gap-3">
+                <Button variant="primary">동작</Button>
+                <Button variant="ghost">취소</Button>
+              </div>
+            </Panel>
+            <Panel title="절취선 패널" perforated>
+              <p className="text-body-lg">
+                영수증 절취선(굵은 점선 윗변)은 이 시스템에서 유지하는 유일한 장식 모티프다.
+              </p>
+              <StatusBadge tone="virtual">가상 출력 모드</StatusBadge>
+            </Panel>
+          </div>
+        </Section>
+
+        <Section title="컨트롤">
+          <Panel>
+            <SegmentedControl
+              label="프레임"
+              options={[
+                { value: 'basic', label: '기본 프레임' },
+                { value: 'date', label: '날짜 프레임' },
+              ]}
+              value={frame}
+              onChange={setFrame}
+            />
+            <SliderField
+              label="밝기"
+              min={-50}
+              max={50}
+              value={brightness}
+              displayValue={String(brightness)}
+              onChange={setBrightness}
+            />
+            <TextField
+              label="영수증 문구"
+              placeholder="예: 오늘도 좋은 하루"
+              maxLength={24}
+              value={caption}
+              hint={`${caption.length} / 24자`}
+              onChange={(event) => setCaption(event.target.value)}
+            />
+          </Panel>
+        </Section>
+
+        <Section title="진행 · 카운트다운">
+          <div className="flex flex-wrap items-center gap-10">
+            <CutProgress current={2} />
+            <Countdown seconds={3} />
+            <Countdown seconds={1} />
+          </div>
+          <p className="text-caption text-soft">마지막 1초는 셔터 레드로 전환.</p>
+        </Section>
+
+        <Section title="결과 뷰어 받침">
+          <div className="flex items-center justify-center bg-viewer p-10">
+            <div className="flex h-64 w-28 items-center justify-center bg-[#faf7f1] text-caption text-[#211d16]">
+              영수증 PNG 자리
+            </div>
+          </div>
+          <p className="text-caption text-soft">
+            서버 appearance PNG는 배경이 투명해 중간톤(viewer) 받침 위에 올린다 — 규칙 유지.
+          </p>
+        </Section>
+      </main>
+    </div>
+  );
+}

@@ -1,3 +1,14 @@
+# 로컬 포함 폰트
+
+## 화면 UI 폰트 — Wanted Sans Variable (디자인 시스템 v2)
+
+| 항목 | 값 |
+| --- | --- |
+| 파일 | `WantedSansVariable.woff2` (1.3MB, wght 가변) |
+| 원본 | npm `wanted-sans@1.0.3` — `fonts/webfonts/variable/complete/woff2/` |
+| 라이선스 | SIL Open Font License 1.1 — `LICENSE-OFL-WantedSans.txt` |
+| 사용처 | `src/ds/ds.css`의 `--font-sans` (화면 UI 전용, 인쇄 원본에는 쓰지 않음) |
+
 # 인쇄 원본용 한글 폰트
 
 영수증 이미지에 들어가는 한글·날짜·문구는 이 로컬 폰트로 그린다. 프린터의 한글 코드페이지를
