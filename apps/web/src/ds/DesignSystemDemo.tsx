@@ -6,6 +6,7 @@ import {
   Countdown,
   CutProgress,
   Dialog,
+  Keyboard,
   Keypad,
   Notice,
   Panel,
@@ -84,6 +85,7 @@ export default function DesignSystemDemo() {
   const [caption, setCaption] = useState('');
   const [profile, setProfile] = useState('virtual-80');
   const [pin, setPin] = useState('');
+  const [email, setEmail] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
 
   // 검수용: 현재 테마에서 각 토큰이 실제로 어떤 값인지 hex로 표시한다.
@@ -248,11 +250,33 @@ export default function DesignSystemDemo() {
             <Keypad
               onDigit={(digit) => setPin((current) => (current + digit).slice(0, 6))}
               onBackspace={() => setPin((current) => current.slice(0, -1))}
-              onClear={() => setPin('')}
             />
             <p className="text-caption text-soft">
               칸을 탭하면 하드웨어 키보드로도 입력된다(one-time-code 자동완성 지원).
-              키패드 키 60px.
+              키패드 키 60px, 지우기는 ⌫ 하나.
+            </p>
+          </Panel>
+        </Section>
+
+        <Section title="화상 키보드">
+          <Panel>
+            <TextField
+              label="이메일"
+              placeholder="you@example.com"
+              inputMode="none"
+              autoCapitalize="none"
+              spellCheck={false}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+            <Keyboard
+              onKey={(char) => setEmail((current) => current + char)}
+              onBackspace={() => setEmail((current) => current.slice(0, -1))}
+            />
+            <p className="text-caption text-soft">
+              입력창은 inputMode=&quot;none&quot;이라 OS 소프트 키보드가 뜨지 않고, 화상 키보드는
+              포커스를 뺏지 않아 물리 키보드와 동시에 동작한다. 숫자열 상시 노출, Shift는 원샷.
+              한글 문구 입력은 물리 키보드용(조합 입력은 후속).
             </p>
           </Panel>
         </Section>

@@ -25,7 +25,7 @@ hex 값이 함께 표시된다.
 | 파일 | 역할 |
 | --- | --- |
 | `apps/web/src/ds/ds.css` | 토큰 전부. ① 원시 팔레트(`--ds-gray-*`, `--ds-red-*`) ② 시맨틱(`--ds-bg`, `--ds-text`…, `[data-ds-theme]`별 재정의) ③ Tailwind `@theme` 매핑(`--color-*`, `--font-*`, `--text-*`) |
-| `apps/web/src/ds/components.tsx` | Button/StatusBadge/Panel/SegmentedControl/Select(커스텀 드롭다운)/SliderField/TextField/CutProgress/Countdown + 확장 대비: Keypad/CodeInput(OTP 6칸)/Dialog/Notice/Spinner — 시맨틱 토큰 유틸리티만 사용 |
+| `apps/web/src/ds/components.tsx` | Button/StatusBadge/Panel/SegmentedControl/Select(커스텀 드롭다운)/SliderField/TextField/CutProgress/Countdown + 확장 대비: Keypad/Keyboard(화상 QWERTY)/CodeInput(OTP 6칸)/Dialog/Notice/Spinner — 시맨틱 토큰 유틸리티만 사용 |
 | `apps/web/src/ds/DesignSystemDemo.tsx` | 검수용 데모 페이지(`#design`) |
 
 색 일괄 교체 = `ds.css`의 시맨틱 블록 값만 변경. 폰트 교체 = `@theme`의 `--font-sans` 한 줄
@@ -57,7 +57,10 @@ hex 값이 함께 표시된다.
 - 터치 48/60px, 포커스 링, `prefers-reduced-motion` 무효화, `word-break: keep-all`.
 - 터치 우선: 슬라이더는 커스텀 28px 썸 + 48px 히트 영역(`.ds-range`), 소수 선택지는
   SegmentedControl, 목록형은 Select(커스텀 listbox 드롭다운 — 열릴 때 `ds-drop`으로 내려오고
-  닫힘은 즉시, 항목 48px, 키보드 조작·reduced-motion 대응). Keypad 키 60px, CodeInput 칸 56px.
+  닫힘은 즉시, 항목 48px, 키보드 조작·reduced-motion 대응). Keypad 키 60px(지우기 ⌫ 하나),
+  CodeInput 칸 56px. Keyboard(화상 QWERTY)는 OS 소프트 키보드 대체 — 대상 입력창에
+  inputMode="none", 키는 pointerdown preventDefault로 포커스를 안 뺏어 물리 키보드와 병행,
+  숫자열 상시 노출·원샷 Shift·이메일 기호(@ . - _). 한글 조합 입력은 범위 밖(물리 키보드용).
 - 대비: 본문 4.5:1 이상. 데모 검수와 실제 적용 시 재측정한다.
 
 ## 다음 단계 (검수 통과 후)
