@@ -1,4 +1,10 @@
-import type { CSSProperties, ComponentPropsWithoutRef, ReactNode } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import type {
+  CSSProperties,
+  ComponentPropsWithoutRef,
+  KeyboardEvent as ReactKeyboardEvent,
+  ReactNode,
+} from 'react';
 
 /* 디자인 시스템 v2 컴포넌트. 스타일은 ds.css의 시맨틱 토큰을 Tailwind 유틸리티로만 참조한다.
    기존 ui/(07번)와 별도 — 데모 검수 통과 후 실제 화면 적용 단계에서 교체한다. */
@@ -177,10 +183,11 @@ export function SliderField({
   );
 }
 
-/* ── Select ──────────────────────────────────────────────────────── */
+/* ── Select (커스텀 드롭다운) ────────────────────────────────────── */
 
 /** 소수 선택지는 SegmentedControl, 목록이 길거나 자리가 좁으면 Select.
-    네이티브 select라 터치에서는 OS 피커가 열린다 — 별도 커스텀 드롭다운을 만들지 않는다. */
+    listbox 패턴 커스텀 드롭다운 — 열릴 때 ds-drop으로 부드럽게 내려오고(닫힘은 즉시),
+    reduced-motion에서는 애니메이션이 꺼진다. 항목 터치 크기 48px. */
 export function Select<T extends string>({
   label,
   options,
@@ -196,33 +203,106 @@ export function Select<T extends string>({
   onChange: (next: T) => void;
   className?: string;
 }) {
+  const listId = useId();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const selectedIndex = options.findIndex((option) => option.value === value);
+  const [activeIndex, setActiveIndex] = useState(Math.max(0, selectedIndex));
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [open]);
+
+  const openList = () => {
+    setActiveIndex(Math.max(0, selectedIndex));
+    setOpen(true);
+  };
+  const commit = (index: number) => {
+    onChange(options[index].value);
+    setOpen(false);
+  };
+  const onKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    if (!open) {
+      if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(event.key)) {
+        event.preventDefault();
+        openList();
+      }
+      return;
+    }
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      const delta = event.key === 'ArrowDown' ? 1 : -1;
+      setActiveIndex((index) => Math.min(options.length - 1, Math.max(0, index + delta)));
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      commit(activeIndex);
+    } else if (event.key === 'Escape' || event.key === 'Tab') {
+      setOpen(false);
+    }
+  };
+
   return (
-    <label className={cx('flex flex-col gap-1.5', className)}>
-      <span className="text-label font-medium text-soft">{label}</span>
-      <span className="relative">
-        <select
-          className="min-h-12 w-full appearance-none border border-line-strong bg-field pl-4 pr-10 text-body disabled:border-line disabled:text-disabled"
-          value={value}
-          disabled={disabled}
-          onChange={(event) => onChange(event.target.value as T)}
-        >
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <svg
-          className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-soft"
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          aria-hidden="true"
-        >
-          <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" strokeWidth="2" />
-        </svg>
+    <div ref={rootRef} className={cx('flex flex-col gap-1.5', className)}>
+      <span className="text-label font-medium text-soft" id={`${listId}-label`}>
+        {label}
       </span>
-    </label>
+      <div className="relative">
+        <button
+          type="button"
+          id={`${listId}-button`}
+          disabled={disabled}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-labelledby={`${listId}-label ${listId}-button`}
+          aria-activedescendant={open ? `${listId}-${activeIndex}` : undefined}
+          className="flex min-h-12 w-full items-center justify-between gap-2 border border-line-strong bg-field px-4 text-body disabled:border-line disabled:text-disabled"
+          onClick={() => (open ? setOpen(false) : openList())}
+          onKeyDown={onKeyDown}
+        >
+          <span>{options[selectedIndex]?.label}</span>
+          <svg
+            className={cx('shrink-0 text-soft transition-transform duration-100', open && 'rotate-180')}
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            aria-hidden="true"
+          >
+            <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" strokeWidth="2" />
+          </svg>
+        </button>
+        {open && (
+          <ul
+            role="listbox"
+            id={listId}
+            aria-labelledby={`${listId}-label`}
+            className="ds-drop absolute inset-x-0 top-full z-10 mt-1 border border-line-strong bg-layer"
+          >
+            {options.map((option, index) => (
+              <li
+                key={option.value}
+                id={`${listId}-${index}`}
+                role="option"
+                aria-selected={option.value === value}
+                className={cx(
+                  'flex min-h-12 cursor-pointer items-center px-4 text-body',
+                  index === activeIndex && 'bg-sunken',
+                  option.value === value && 'font-semibold',
+                )}
+                onPointerEnter={() => setActiveIndex(index)}
+                onClick={() => commit(index)}
+              >
+                {option.label}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -275,6 +355,180 @@ export function CutProgress({ current, total = 4 }: { current: number; total?: n
         ))}
       </span>
     </div>
+  );
+}
+
+/* ── Keypad ──────────────────────────────────────────────────────── */
+
+/** 터치 숫자 키패드. PIN·인증번호 입력에서 CodeInput과 함께 쓴다. 키 60px. */
+export function Keypad({
+  onDigit,
+  onBackspace,
+  onClear,
+  disabled = false,
+}: {
+  onDigit: (digit: string) => void;
+  onBackspace: () => void;
+  onClear: () => void;
+  disabled?: boolean;
+}) {
+  const key =
+    'min-h-15 border border-line-strong bg-layer text-heading font-semibold hover:bg-sunken disabled:cursor-not-allowed disabled:text-disabled';
+  return (
+    <div className="grid w-64 grid-cols-3 gap-2">
+      {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
+        <button key={digit} type="button" className={key} disabled={disabled} onClick={() => onDigit(digit)}>
+          {digit}
+        </button>
+      ))}
+      <button type="button" className={cx(key, 'text-label text-soft')} disabled={disabled} onClick={onClear}>
+        지움
+      </button>
+      <button type="button" className={key} disabled={disabled} onClick={() => onDigit('0')}>
+        0
+      </button>
+      <button
+        type="button"
+        className={key}
+        disabled={disabled}
+        aria-label="한 글자 지우기"
+        onClick={onBackspace}
+      >
+        ⌫
+      </button>
+    </div>
+  );
+}
+
+/* ── CodeInput ───────────────────────────────────────────────────── */
+
+/** 인증번호/PIN 6칸 입력(shadcn InputOTP류). 실제 입력은 투명한 input 하나가 받아
+    하드웨어 키보드·IME 붙여넣기도 동작하고, Keypad로는 value를 밖에서 조작한다. */
+export function CodeInput({
+  label,
+  length = 6,
+  value,
+  onChange,
+  className,
+}: {
+  label: string;
+  length?: number;
+  value: string;
+  onChange: (next: string) => void;
+  className?: string;
+}) {
+  const [focused, setFocused] = useState(false);
+  const digits = value.slice(0, length);
+  const activeIndex = Math.min(digits.length, length - 1);
+  return (
+    <label className={cx('flex w-fit flex-col gap-1.5', className)}>
+      <span className="text-label font-medium text-soft">{label}</span>
+      <span className="relative inline-flex gap-2">
+        <input
+          className="absolute inset-0 cursor-pointer opacity-0"
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          aria-label={label}
+          value={digits}
+          maxLength={length}
+          onChange={(event) => onChange(event.target.value.replace(/\D/g, '').slice(0, length))}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+        />
+        {Array.from({ length }, (_, index) => (
+          <span
+            key={index}
+            aria-hidden="true"
+            className={cx(
+              'flex size-14 items-center justify-center border bg-field text-heading font-bold tabular-nums',
+              focused && index === activeIndex ? 'border-2 border-ink' : 'border-line-strong',
+            )}
+          >
+            {digits[index] ?? ''}
+          </span>
+        ))}
+      </span>
+    </label>
+  );
+}
+
+/* ── Dialog ──────────────────────────────────────────────────────── */
+
+/** 확인 대화상자. 네이티브 <dialog>라 포커스 가둠·ESC 닫기·최상위 표시를 브라우저가 맡는다. */
+export function Dialog({
+  open,
+  title,
+  children,
+  onClose,
+}: {
+  open: boolean;
+  title: ReactNode;
+  children: ReactNode;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = ref.current;
+    if (!dialog) return;
+    if (open && !dialog.open) dialog.showModal();
+    else if (!open && dialog.open) dialog.close();
+  }, [open]);
+  return (
+    <dialog
+      ref={ref}
+      onClose={onClose}
+      className="ds-drop m-auto w-full max-w-sm border-2 border-ink bg-layer p-6 text-body text-text backdrop:bg-[rgb(0_0_0/0.55)]"
+    >
+      <div className="flex flex-col gap-4">
+        <h2 className="text-heading font-bold">{title}</h2>
+        {children}
+      </div>
+    </dialog>
+  );
+}
+
+/* ── Notice ──────────────────────────────────────────────────────── */
+
+export type NoticeTone = 'info' | 'ok' | 'warn' | 'danger';
+
+const noticeTone: Record<NoticeTone, string> = {
+  info: 'border-l-ink',
+  ok: 'border-l-ok',
+  warn: 'border-l-warn',
+  danger: 'border-l-danger',
+};
+
+/** 인라인 안내 블록. 라이브 영역이 필요하면 호출부가 role=status/alert를 붙인다. */
+export function Notice({
+  tone = 'info',
+  title,
+  children,
+  className,
+  ...rest
+}: ComponentPropsWithoutRef<'div'> & { tone?: NoticeTone; title?: ReactNode }) {
+  return (
+    <div
+      className={cx('border border-line border-l-4 bg-layer p-4', noticeTone[tone], className)}
+      {...rest}
+    >
+      {title !== undefined && <p className="text-body font-semibold">{title}</p>}
+      <div className="text-body text-soft">{children}</div>
+    </div>
+  );
+}
+
+/* ── Spinner ─────────────────────────────────────────────────────── */
+
+/** 진행 표시. 문구가 정보의 본체(role=status는 호출부), 원은 장식이며 reduced-motion에서 멈춘다. */
+export function Spinner({ label }: { label?: ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-3">
+      <span
+        className="size-6 animate-spin rounded-[50%] border-2 border-line border-t-ink"
+        aria-hidden="true"
+      />
+      {label && <span className="text-body text-soft">{label}</span>}
+    </span>
   );
 }
 

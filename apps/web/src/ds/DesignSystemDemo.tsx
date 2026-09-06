@@ -2,12 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import './ds.css';
 import {
   Button,
+  CodeInput,
   Countdown,
   CutProgress,
+  Dialog,
+  Keypad,
+  Notice,
   Panel,
   SegmentedControl,
   Select,
   SliderField,
+  Spinner,
   StatusBadge,
   TextField,
 } from './components';
@@ -78,6 +83,8 @@ export default function DesignSystemDemo() {
   const [brightness, setBrightness] = useState(0);
   const [caption, setCaption] = useState('');
   const [profile, setProfile] = useState('virtual-80');
+  const [pin, setPin] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   // 검수용: 현재 테마에서 각 토큰이 실제로 어떤 값인지 hex로 표시한다.
   useEffect(() => {
@@ -230,9 +237,58 @@ export default function DesignSystemDemo() {
             />
             <p className="text-caption text-soft">
               터치 기준: 모든 컨트롤 히트 영역 48px 이상, 슬라이더 썸 28px. 소수 선택지는
-              세그먼트, 목록이 길면 Select(네이티브 — 터치 시 OS 피커).
+              세그먼트, 목록형은 Select — 열릴 때만 부드럽게 내려오고 항목도 48px.
             </p>
           </Panel>
+        </Section>
+
+        <Section title="키패드 · 인증번호">
+          <Panel>
+            <CodeInput label="운영자 PIN" value={pin} onChange={setPin} />
+            <Keypad
+              onDigit={(digit) => setPin((current) => (current + digit).slice(0, 6))}
+              onBackspace={() => setPin((current) => current.slice(0, -1))}
+              onClear={() => setPin('')}
+            />
+            <p className="text-caption text-soft">
+              칸을 탭하면 하드웨어 키보드로도 입력된다(one-time-code 자동완성 지원).
+              키패드 키 60px.
+            </p>
+          </Panel>
+        </Section>
+
+        <Section title="안내 · 대화상자">
+          <div className="flex flex-col gap-3">
+            <Notice tone="info" title="가상 출력 모드">
+              실물 프린터 없이 서버가 만든 영수증 PNG로 결과를 보여줍니다.
+            </Notice>
+            <Notice tone="ok">인쇄 작업이 큐에 전달됐어요. 종이를 확인해 주세요.</Notice>
+            <Notice tone="warn" title="프로필 미검증">
+              작은 패턴 인쇄로 후보 설정을 먼저 확인해 주세요.
+            </Notice>
+            <Notice tone="danger" title="출력 실패">
+              설정을 확인한 뒤 다시 시도해 주세요. 사진과 편집 내용은 남아 있어요.
+            </Notice>
+            <div className="flex flex-wrap items-center gap-6">
+              <Spinner label="가상 영수증을 만드는 중…" />
+              <Button variant="secondary" onClick={() => setDialogOpen(true)}>
+                재출력 확인 대화상자 열기
+              </Button>
+            </div>
+          </div>
+          <Dialog open={dialogOpen} title="다시 출력할까요?" onClose={() => setDialogOpen(false)}>
+            <p className="text-soft">
+              같은 영수증이 한 장 더 출력될 수 있어요. 이미 나온 종이를 확인해 주세요.
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button variant="ghost" onClick={() => setDialogOpen(false)}>
+                취소
+              </Button>
+              <Button variant="primary" onClick={() => setDialogOpen(false)}>
+                다시 출력
+              </Button>
+            </div>
+          </Dialog>
         </Section>
 
         <Section title="진행 · 카운트다운">

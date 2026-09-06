@@ -25,7 +25,7 @@ hex 값이 함께 표시된다.
 | 파일 | 역할 |
 | --- | --- |
 | `apps/web/src/ds/ds.css` | 토큰 전부. ① 원시 팔레트(`--ds-gray-*`, `--ds-red-*`) ② 시맨틱(`--ds-bg`, `--ds-text`…, `[data-ds-theme]`별 재정의) ③ Tailwind `@theme` 매핑(`--color-*`, `--font-*`, `--text-*`) |
-| `apps/web/src/ds/components.tsx` | Button/StatusBadge/Panel/SegmentedControl/**Select**/SliderField/TextField/CutProgress/Countdown — 시맨틱 토큰 유틸리티만 사용 |
+| `apps/web/src/ds/components.tsx` | Button/StatusBadge/Panel/SegmentedControl/Select(커스텀 드롭다운)/SliderField/TextField/CutProgress/Countdown + 확장 대비: Keypad/CodeInput(OTP 6칸)/Dialog/Notice/Spinner — 시맨틱 토큰 유틸리티만 사용 |
 | `apps/web/src/ds/DesignSystemDemo.tsx` | 검수용 데모 페이지(`#design`) |
 
 색 일괄 교체 = `ds.css`의 시맨틱 블록 값만 변경. 폰트 교체 = `@theme`의 `--font-sans` 한 줄
@@ -56,12 +56,14 @@ hex 값이 함께 표시된다.
   받침(`--ds-viewer`) 위에 올림.
 - 터치 48/60px, 포커스 링, `prefers-reduced-motion` 무효화, `word-break: keep-all`.
 - 터치 우선: 슬라이더는 커스텀 28px 썸 + 48px 히트 영역(`.ds-range`), 소수 선택지는
-  SegmentedControl, 목록이 길면 네이티브 Select(터치 시 OS 피커) — 커스텀 드롭다운은 만들지 않는다.
+  SegmentedControl, 목록형은 Select(커스텀 listbox 드롭다운 — 열릴 때 `ds-drop`으로 내려오고
+  닫힘은 즉시, 항목 48px, 키보드 조작·reduced-motion 대응). Keypad 키 60px, CodeInput 칸 56px.
 - 대비: 본문 4.5:1 이상. 데모 검수와 실제 적용 시 재측정한다.
 
 ## 다음 단계 (검수 통과 후)
 
-1. 데모에서 배경안 확정(쿨/종이색/다크 중 1).
+1. 데모에서 배경안 확정. **유력안(2026-09-06): 2 종이색 ↔ 3 다크 페어를 두고 앱에서
+   전환하는 구성** — 확정되면 cool은 제거하고 전환 토글을 설계에 포함한다.
 2. 실제 화면 적용: `styles/tokens.css·base.css·booth.css`와 `ui/`를 `ds/`로 교체,
    `.ds-root` 최소 리셋을 `tailwindcss/preflight.css`로 전환, `docs/UI_DESIGN.md` 갱신.
    04/07/12와 같은 절차(실화면 실측 + 독립 검수)로 진행한다.
