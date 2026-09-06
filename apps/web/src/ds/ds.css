@@ -80,47 +80,50 @@
   --color-viewer-deep: var(--ds-viewer-deep);
 }
 
-/* ── 원시 팔레트 + 시맨틱 기본값(cool 테마) ───────────────────── */
+/* ── 원시 팔레트 + 시맨틱 기본값(cool 테마) ─────────────────────
+   큐레이션 기준: 중립은 stone 계열(살짝 웜한 그레이) 한 램프로 통일해 영수증 종이·
+   버밀리언과 온도를 맞추고, 상태색(ok/warn/danger)은 같은 명도 스텝에서 뽑아
+   채도·무게를 일치시킨다. 임의 값 조합 금지 — 새 색은 반드시 램프에서 고른다. */
 .ds-root {
-  /* 중립 그레이 램프 (Carbon gray 계열) */
+  /* stone 중립 램프 (웜 그레이) */
   --ds-gray-0: #ffffff;
-  --ds-gray-10: #f4f4f4;
-  --ds-gray-20: #e0e0e0;
-  --ds-gray-30: #c6c6c6;
-  --ds-gray-40: #a8a8a8;
-  --ds-gray-50: #8d8d8d;
-  --ds-gray-60: #6f6f6f;
-  --ds-gray-70: #525252;
-  --ds-gray-80: #393939;
-  --ds-gray-90: #262626;
-  --ds-gray-100: #161616;
+  --ds-gray-10: #fafaf9;
+  --ds-gray-20: #f5f5f4;
+  --ds-gray-30: #e7e5e4;
+  --ds-gray-40: #d6d3d1;
+  --ds-gray-50: #a8a29e;
+  --ds-gray-60: #78716c;
+  --ds-gray-70: #57534e;
+  --ds-gray-80: #44403c;
+  --ds-gray-90: #292524;
+  --ds-gray-100: #1c1917;
 
-  /* 셔터 레드 — 브랜드 포인트 색 하나 */
-  --ds-red-60: #bc3a14; /* 흰 글자 대비 ≈ 5.6:1 */
-  --ds-red-70: #9c2e0e;
-  --ds-red-30: #ff7e5e; /* 다크 테마용, #161616 글자 대비 ≈ 6.8:1 */
+  /* 셔터 버밀리언 — 브랜드 포인트 색 하나 */
+  --ds-red-60: #c73e1d; /* 흰 글자 대비 ≈ 5.1:1 */
+  --ds-red-70: #a33217;
+  --ds-red-30: #ff7e5e; /* 다크 테마용, #1c1917 글자 대비 ≈ 6.8:1 */
   --ds-red-40: #e8663f;
 
-  --ds-bg: var(--ds-gray-0);
-  --ds-layer: var(--ds-gray-10);
-  --ds-sunken: var(--ds-gray-20);
-  --ds-field: var(--ds-gray-10);
+  --ds-bg: var(--ds-gray-10);
+  --ds-layer: var(--ds-gray-0); /* 패널이 배경보다 밝다 — 경계선과 함께 면을 구분 */
+  --ds-sunken: var(--ds-gray-30);
+  --ds-field: var(--ds-gray-0);
   --ds-text: var(--ds-gray-100);
   --ds-soft: var(--ds-gray-70);
-  --ds-disabled: var(--ds-gray-40);
-  --ds-line: var(--ds-gray-20);
+  --ds-disabled: var(--ds-gray-50);
+  --ds-line: var(--ds-gray-30);
   --ds-line-strong: var(--ds-gray-50);
   --ds-ink: var(--ds-gray-100);
   --ds-ink-hover: var(--ds-gray-80);
   --ds-on-ink: var(--ds-gray-0);
   --ds-accent: var(--ds-red-60);
   --ds-accent-hover: var(--ds-red-70);
-  --ds-accent-tint: #f9e5dd;
+  --ds-accent-tint: #fbeae5;
   --ds-on-accent: #ffffff;
-  --ds-ok: #2c6e3f;
-  --ds-warn: #8a5a00;
-  --ds-danger: var(--ds-red-70);
-  --ds-danger-tint: #f9e0d8;
+  --ds-ok: #047857; /* emerald-700, 흰 배경 대비 ≈ 5.2:1 */
+  --ds-warn: #92400e; /* amber-800, ≈ 7.0:1 */
+  --ds-danger: #b91c1c; /* red-700, ≈ 5.9:1 */
+  --ds-danger-tint: #fee2e2;
   --ds-focus: var(--ds-gray-100);
   --ds-viewer: var(--ds-gray-70);
   --ds-viewer-deep: var(--ds-gray-80);
@@ -147,28 +150,28 @@
   --ds-viewer-deep: #45413a;
 }
 
-/* dark — 짙은 그레이 키오스크안. primary 버튼은 반전(밝은 면 + 짙은 글자) */
+/* dark — 짙은 stone 키오스크안. primary 버튼은 반전(밝은 면 + 짙은 글자) */
 .ds-root[data-ds-theme='dark'] {
   --ds-bg: var(--ds-gray-100);
   --ds-layer: var(--ds-gray-90);
   --ds-sunken: var(--ds-gray-80);
   --ds-field: var(--ds-gray-90);
   --ds-text: var(--ds-gray-10);
-  --ds-soft: var(--ds-gray-30);
+  --ds-soft: var(--ds-gray-40);
   --ds-disabled: var(--ds-gray-60);
   --ds-line: var(--ds-gray-80);
   --ds-line-strong: var(--ds-gray-60);
   --ds-ink: var(--ds-gray-10);
-  --ds-ink-hover: var(--ds-gray-20);
+  --ds-ink-hover: var(--ds-gray-30);
   --ds-on-ink: var(--ds-gray-100);
   --ds-accent: var(--ds-red-30);
   --ds-accent-hover: var(--ds-red-40);
-  --ds-accent-tint: #3a221a;
+  --ds-accent-tint: #3c241c;
   --ds-on-accent: var(--ds-gray-100);
-  --ds-ok: #42be65;
-  --ds-warn: #d2a106;
-  --ds-danger: #ff8262;
-  --ds-danger-tint: #3a221a;
+  --ds-ok: #34d399; /* emerald-400 */
+  --ds-warn: #fbbf24; /* amber-400 */
+  --ds-danger: #f87171; /* red-400 */
+  --ds-danger-tint: #3f1d1d;
   --ds-focus: var(--ds-gray-10);
   --ds-viewer: var(--ds-gray-80);
   --ds-viewer-deep: var(--ds-gray-90);
@@ -193,7 +196,7 @@
   padding: 0;
 }
 
-:where(.ds-root) :where(button, input) {
+:where(.ds-root) :where(button, input, select) {
   font: inherit;
   color: inherit;
   border: 0;
@@ -201,8 +204,66 @@
   padding: 0;
 }
 
-:where(.ds-root) :where(button:not(:disabled)) {
+:where(.ds-root) :where(button:not(:disabled), select:not(:disabled)) {
   cursor: pointer;
+}
+
+/* ── 터치용 슬라이더 (SliderField) ─────────────────────────────
+   네이티브 썸(≈16px)은 손가락에 작다. 트랙 4px + 각진 28px 썸, 히트 영역 48px.
+   채움 비율은 컴포넌트가 --fill(%)로 넘긴다. Chromium이 실사용 대상, -moz-는 개발용. */
+.ds-range {
+  appearance: none;
+  width: 100%;
+  height: 48px;
+  background: transparent;
+}
+
+.ds-range::-webkit-slider-runnable-track {
+  height: 4px;
+  background: linear-gradient(
+    to right,
+    var(--ds-ink) var(--fill, 50%),
+    var(--ds-sunken) var(--fill, 50%)
+  );
+}
+
+.ds-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  margin-top: -12px; /* (28 - 트랙 4) / 2 */
+  background: var(--ds-layer);
+  border: 2px solid var(--ds-ink);
+}
+
+.ds-range:disabled::-webkit-slider-runnable-track {
+  background: var(--ds-sunken);
+}
+
+.ds-range:disabled::-webkit-slider-thumb {
+  border-color: var(--ds-disabled);
+}
+
+.ds-range::-moz-range-track {
+  height: 4px;
+  background: var(--ds-sunken);
+}
+
+.ds-range::-moz-range-progress {
+  height: 4px;
+  background: var(--ds-ink);
+}
+
+.ds-range::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 0;
+  background: var(--ds-layer);
+  border: 2px solid var(--ds-ink);
+}
+
+.ds-range:disabled::-moz-range-thumb {
+  border-color: var(--ds-disabled);
 }
 
 /* 구 base.css의 둥근 focus-ring(box-shadow)을 무효화하고 각진 outline으로 교체.

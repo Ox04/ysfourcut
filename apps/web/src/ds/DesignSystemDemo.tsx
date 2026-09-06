@@ -6,6 +6,7 @@ import {
   CutProgress,
   Panel,
   SegmentedControl,
+  Select,
   SliderField,
   StatusBadge,
   TextField,
@@ -76,6 +77,7 @@ export default function DesignSystemDemo() {
   const [frame, setFrame] = useState<'basic' | 'date'>('basic');
   const [brightness, setBrightness] = useState(0);
   const [caption, setCaption] = useState('');
+  const [profile, setProfile] = useState('virtual-80');
 
   // 검수용: 현재 테마에서 각 토큰이 실제로 어떤 값인지 hex로 표시한다.
   useEffect(() => {
@@ -98,7 +100,7 @@ export default function DesignSystemDemo() {
         <div>
           <h1 className="text-heading font-bold">YS Fourcut 디자인 시스템 v2</h1>
           <p className="text-caption text-soft">
-            모서리 0 · 경계선 구획 · 모노크롬 + 셔터 레드 · Wanted Sans
+            모서리 0 · 경계선 구획 · Stone 중립 + 셔터 버밀리언 · Wanted Sans
           </p>
         </div>
         <SegmentedControl label="배경안 비교" options={THEMES} value={theme} onChange={setTheme} />
@@ -209,6 +211,15 @@ export default function DesignSystemDemo() {
               displayValue={String(brightness)}
               onChange={setBrightness}
             />
+            <Select
+              label="용지 프로필"
+              options={[
+                { value: 'virtual-80', label: '가상 80mm · 640dot' },
+                { value: 'virtual-58', label: '가상 58mm · 384dot' },
+              ]}
+              value={profile}
+              onChange={setProfile}
+            />
             <TextField
               label="영수증 문구"
               placeholder="예: 오늘도 좋은 하루"
@@ -217,6 +228,10 @@ export default function DesignSystemDemo() {
               hint={`${caption.length} / 24자`}
               onChange={(event) => setCaption(event.target.value)}
             />
+            <p className="text-caption text-soft">
+              터치 기준: 모든 컨트롤 히트 영역 48px 이상, 슬라이더 썸 28px. 소수 선택지는
+              세그먼트, 목록이 길면 Select(네이티브 — 터치 시 OS 피커).
+            </p>
           </Panel>
         </Section>
 

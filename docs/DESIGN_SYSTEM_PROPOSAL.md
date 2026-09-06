@@ -25,7 +25,7 @@ hex 값이 함께 표시된다.
 | 파일 | 역할 |
 | --- | --- |
 | `apps/web/src/ds/ds.css` | 토큰 전부. ① 원시 팔레트(`--ds-gray-*`, `--ds-red-*`) ② 시맨틱(`--ds-bg`, `--ds-text`…, `[data-ds-theme]`별 재정의) ③ Tailwind `@theme` 매핑(`--color-*`, `--font-*`, `--text-*`) |
-| `apps/web/src/ds/components.tsx` | Button/StatusBadge/Panel/SegmentedControl/SliderField/TextField/CutProgress/Countdown — 시맨틱 토큰 유틸리티만 사용 |
+| `apps/web/src/ds/components.tsx` | Button/StatusBadge/Panel/SegmentedControl/**Select**/SliderField/TextField/CutProgress/Countdown — 시맨틱 토큰 유틸리티만 사용 |
 | `apps/web/src/ds/DesignSystemDemo.tsx` | 검수용 데모 페이지(`#design`) |
 
 색 일괄 교체 = `ds.css`의 시맨틱 블록 값만 변경. 폰트 교체 = `@theme`의 `--font-sans` 한 줄
@@ -40,9 +40,10 @@ hex 값이 함께 표시된다.
 | 타입 | display 42 / title 28 / heading 20 / body-lg 18(키오스크 본문) / body 16 / label 14 / caption 12 |
 | 모서리 | 전부 0 (`--radius-*` 제거) |
 | elevation | 그림자 제거, `--ds-line`(1px) / `--ds-line-strong` 경계선 |
-| 그레이 | Carbon 계열 램프 `--ds-gray-0..100` (#FFFFFF~#161616) |
-| 포인트 | 셔터 레드 `--ds-red-60 #BC3A14`(흰 글자 5.6:1), 다크 테마는 `--ds-red-30 #FF7E5E`(짙은 글자 6.8:1) |
-| 버튼 | primary=잉크 단색, **accent=셔터 레드(촬영 시작·출력 등 핵심 순간 전용)**, secondary=외곽선, ghost. md 48 / lg 60px |
+| 중립 | **stone 웜그레이 램프** `--ds-gray-0..100` (#FFFFFF~#1C1917) — 영수증 종이·버밀리언과 온도 통일. 새 색은 반드시 램프에서 고른다 |
+| 포인트 | 셔터 버밀리언 `--ds-red-60 #C73E1D`(흰 글자 5.1:1), 다크 테마는 `--ds-red-30 #FF7E5E`(짙은 글자 6.8:1) |
+| 상태색 | 같은 명도 스텝에서 통일 — ok emerald-700 `#047857` / warn amber-800 `#92400E` / danger red-700 `#B91C1C` (다크: 각 400 스텝) |
+| 버튼 | primary=잉크 단색, **accent=버밀리언(촬영 시작·출력 등 핵심 순간 전용)**, secondary=외곽선, ghost. md 48 / lg 60px |
 | 포커스 | 2px 실선 outline + 2px offset (`--ds-focus`) |
 | 간격·터치 | 기존 4px 그리드·48/60px 터치 크기 유지 (변경 없음) |
 
@@ -54,6 +55,8 @@ hex 값이 함께 표시된다.
 - 결과는 서버 PNG 원본 표시, CSS로 영수증을 다시 그리지 않음. appearance PNG는 중간톤
   받침(`--ds-viewer`) 위에 올림.
 - 터치 48/60px, 포커스 링, `prefers-reduced-motion` 무효화, `word-break: keep-all`.
+- 터치 우선: 슬라이더는 커스텀 28px 썸 + 48px 히트 영역(`.ds-range`), 소수 선택지는
+  SegmentedControl, 목록이 길면 네이티브 Select(터치 시 OS 피커) — 커스텀 드롭다운은 만들지 않는다.
 - 대비: 본문 4.5:1 이상. 데모 검수와 실제 적용 시 재측정한다.
 
 ## 다음 단계 (검수 통과 후)

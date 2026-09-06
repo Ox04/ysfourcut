@@ -1,4 +1,4 @@
-import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import type { CSSProperties, ComponentPropsWithoutRef, ReactNode } from 'react';
 
 /* 디자인 시스템 v2 컴포넌트. 스타일은 ds.css의 시맨틱 토큰을 Tailwind 유틸리티로만 참조한다.
    기존 ui/(07번)와 별도 — 데모 검수 통과 후 실제 화면 적용 단계에서 교체한다. */
@@ -161,7 +161,8 @@ export function SliderField({
       </span>
       <input
         type="range"
-        className="w-full accent-accent disabled:opacity-40"
+        className="ds-range"
+        style={{ '--fill': `${((value - min) / (max - min)) * 100}%` } as CSSProperties}
         aria-label={label}
         min={min}
         max={max}
@@ -173,6 +174,55 @@ export function SliderField({
         {displayValue}
       </span>
     </div>
+  );
+}
+
+/* ── Select ──────────────────────────────────────────────────────── */
+
+/** 소수 선택지는 SegmentedControl, 목록이 길거나 자리가 좁으면 Select.
+    네이티브 select라 터치에서는 OS 피커가 열린다 — 별도 커스텀 드롭다운을 만들지 않는다. */
+export function Select<T extends string>({
+  label,
+  options,
+  value,
+  disabled = false,
+  onChange,
+  className,
+}: {
+  label: string;
+  options: readonly SegmentOption<T>[];
+  value: T;
+  disabled?: boolean;
+  onChange: (next: T) => void;
+  className?: string;
+}) {
+  return (
+    <label className={cx('flex flex-col gap-1.5', className)}>
+      <span className="text-label font-medium text-soft">{label}</span>
+      <span className="relative">
+        <select
+          className="min-h-12 w-full appearance-none border border-line-strong bg-field pl-4 pr-10 text-body disabled:border-line disabled:text-disabled"
+          value={value}
+          disabled={disabled}
+          onChange={(event) => onChange(event.target.value as T)}
+        >
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <svg
+          className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-soft"
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          aria-hidden="true"
+        >
+          <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" strokeWidth="2" />
+        </svg>
+      </span>
+    </label>
   );
 }
 
