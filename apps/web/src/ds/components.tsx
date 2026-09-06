@@ -361,14 +361,16 @@ export function CutProgress({ current, total = 4 }: { current: number; total?: n
 /* ── Keypad ──────────────────────────────────────────────────────── */
 
 /** 터치 숫자 키패드. PIN·인증번호 입력에서 CodeInput과 함께 쓴다. 키 60px.
-    지우기는 ⌫ 하나만 둔다 — 전체 지움이 필요하면 호출부가 별도 동작으로 제공한다. */
+    하단: 전체 지움 · 0 · ⌫(한 글자). */
 export function Keypad({
   onDigit,
   onBackspace,
+  onClear,
   disabled = false,
 }: {
   onDigit: (digit: string) => void;
   onBackspace: () => void;
+  onClear: () => void;
   disabled?: boolean;
 }) {
   const key =
@@ -380,7 +382,15 @@ export function Keypad({
           {digit}
         </button>
       ))}
-      <span aria-hidden="true" />
+      <button
+        type="button"
+        className={cx(key, 'text-label text-soft')}
+        disabled={disabled}
+        aria-label="전체 지우기"
+        onClick={onClear}
+      >
+        전체 지움
+      </button>
       <button type="button" className={key} disabled={disabled} onClick={() => onDigit('0')}>
         0
       </button>
@@ -399,97 +409,153 @@ export function Keypad({
 
 /* ── Keyboard ────────────────────────────────────────────────────── */
 
-const KEYBOARD_ROWS = ['1234567890', 'qwertyuiop', 'asdfghjkl', 'zxcvbnm'] as const;
+/* 65% 물리 키보드 배열에서 Ctrl/Alt/Fn/Win/화살표만 뺀 것. u = 표준 키 폭 단위.
+   탐색열(Del/PgUp/PgDn)은 캐럿 이동 개념이 없는 키오스크 입력이라 함께 제외했다. */
+type KeyDef = {
+  id: string;
+  label: string; // 문자 키는 기본 글자, 기능 키는 표기
+  shift?: string; // Shift 시 입력·표시될 기호 (문자 키만)
+  u?: number; // 키 폭 단위 (기본 1)
+  action?: 'backspace' | 'shift' | 'caps' | 'enter' | 'tab' | 'esc';
+};
 
-/** 화상 QWERTY 키보드(라틴/이메일용). OS 소프트 키보드가 키오스크 화면을 깨는 것을
-    피하기 위한 것으로, 대상 입력창에는 inputMode="none"을 줘 OS 키보드만 억제한다.
-    키를 pointerdown에서 preventDefault해 입력창 포커스를 뺏지 않으므로 물리 키보드와
-    동시에 동작한다. 숫자열 상시 노출(레이어 전환 없음), Shift는 원샷(한 글자 뒤 해제).
+const k = (label: string, shift?: string): KeyDef => ({ id: label, label, shift });
+const KEYBOARD_65: KeyDef[][] = [
+  [
+    { id: 'esc', label: 'Esc', action: 'esc' },
+    k('1', '!'), k('2', '@'), k('3', '#'), k('4', '$'), k('5', '%'),
+    k('6', '^'), k('7', '&'), k('8', '*'), k('9', '('), k('0', ')'),
+    k('-', '_'), k('=', '+'),
+    { id: 'backspace', label: '⌫', u: 2, action: 'backspace' },
+  ],
+  [
+    { id: 'tab', label: 'Tab', u: 1.5, action: 'tab' },
+    k('q'), k('w'), k('e'), k('r'), k('t'), k('y'), k('u'), k('i'), k('o'), k('p'),
+    k('[', '{'), k(']', '}'), { id: '\\', label: '\\', shift: '|', u: 1.5 },
+  ],
+  [
+    { id: 'caps', label: 'Caps', u: 1.75, action: 'caps' },
+    k('a'), k('s'), k('d'), k('f'), k('g'), k('h'), k('j'), k('k'), k('l'),
+    k(';', ':'), k("'", '"'),
+    { id: 'enter', label: 'Enter', u: 2.25, action: 'enter' },
+  ],
+  [
+    { id: 'lshift', label: '⇧', u: 2.25, action: 'shift' },
+    k('z'), k('x'), k('c'), k('v'), k('b'), k('n'), k('m'),
+    k(',', '<'), k('.', '>'), k('/', '?'),
+    { id: 'rshift', label: '⇧', u: 2.75, action: 'shift' },
+  ],
+];
+
+/** 화상 QWERTY 키보드(라틴/이메일용) — 65% 배열에서 Ctrl/Alt/Fn/Win/화살표 제외.
+    OS 소프트 키보드가 키오스크 화면을 깨는 것을 피하기 위한 것으로, 대상 입력창에는
+    inputMode="none"을 줘 OS 키보드만 억제한다. 키를 pointerdown에서 preventDefault해
+    입력창 포커스를 뺏지 않으므로 물리 키보드와 동시에 동작한다.
+    Shift는 원샷(한 글자 뒤 해제)이고 숫자·기호 키캡도 Shift 기호로 함께 바뀐다(ds-keycap
+    전환 동작). Caps는 글자만 지속 대문자. Esc/Tab/Enter는 핸들러가 있을 때만 동작한다.
     한글 조합 입력은 범위 밖 — 문구 입력은 물리 키보드/후속 과제. */
 export function Keyboard({
   onKey,
   onBackspace,
+  onEnter,
+  onTab,
+  onEscape,
   disabled = false,
   className,
 }: {
   onKey: (char: string) => void;
   onBackspace: () => void;
+  onEnter?: () => void;
+  onTab?: () => void;
+  onEscape?: () => void;
   disabled?: boolean;
   className?: string;
 }) {
   const [shift, setShift] = useState(false);
-  const key =
-    'min-h-12 flex-1 border border-line-strong bg-layer text-body font-medium hover:bg-sunken disabled:cursor-not-allowed disabled:text-disabled';
-  const emit = (char: string) => {
-    onKey(shift ? char.toUpperCase() : char);
-    if (shift) setShift(false);
-  };
+  const [caps, setCaps] = useState(false);
   // 포커스 유지 트릭: 버튼이 focus를 가져가면 물리 키보드 입력이 끊긴다.
   const keepFocus = (event: { preventDefault: () => void }) => event.preventDefault();
 
+  const capFor = (def: KeyDef): string => {
+    if (/^[a-z]$/.test(def.label)) {
+      return shift !== caps ? def.label.toUpperCase() : def.label;
+    }
+    return shift && def.shift ? def.shift : def.label;
+  };
+  const press = (def: KeyDef) => {
+    switch (def.action) {
+      case 'backspace':
+        return onBackspace();
+      case 'shift':
+        return setShift((current) => !current);
+      case 'caps':
+        return setCaps((current) => !current);
+      case 'enter':
+        return onEnter?.();
+      case 'tab':
+        return onTab?.();
+      case 'esc':
+        return onEscape?.();
+      default: {
+        onKey(capFor(def));
+        if (shift) setShift(false);
+      }
+    }
+  };
+  const isOn = (def: KeyDef) =>
+    (def.action === 'shift' && shift) || (def.action === 'caps' && caps);
+
   return (
-    <div className={cx('flex w-full max-w-2xl flex-col gap-2', className)} role="group" aria-label="화상 키보드">
-      {KEYBOARD_ROWS.slice(0, 2).map((row) => (
-        <div key={row} className="flex gap-2">
-          {[...row].map((char) => (
-            <button key={char} type="button" className={key} disabled={disabled} onPointerDown={keepFocus} onClick={() => emit(char)}>
-              {shift ? char.toUpperCase() : char}
+    <div
+      className={cx('flex w-full max-w-3xl flex-col gap-1.5', className)}
+      role="group"
+      aria-label="화상 키보드"
+    >
+      {KEYBOARD_65.map((row, rowIndex) => (
+        <div key={rowIndex} className="flex gap-1.5">
+          {row.map((def) => (
+            <button
+              key={def.id}
+              type="button"
+              style={{ flex: `${def.u ?? 1} 1 0%` }}
+              className={cx(
+                'flex min-h-12 items-center justify-center border font-medium disabled:cursor-not-allowed disabled:text-disabled',
+                def.action && def.action !== 'backspace' ? 'text-label' : 'text-body',
+                // bg/border는 상태별로 분기 — 같은 속성 유틸리티를 겹치면 순서가 보장되지 않는다
+                isOn(def)
+                  ? 'border-ink bg-ink text-on-ink hover:bg-ink-hover'
+                  : 'border-line-strong bg-layer hover:bg-sunken',
+              )}
+              disabled={disabled}
+              aria-pressed={def.action === 'shift' || def.action === 'caps' ? isOn(def) : undefined}
+              aria-label={def.action === 'backspace' ? '한 글자 지우기' : undefined}
+              onPointerDown={keepFocus}
+              onClick={() => press(def)}
+            >
+              {/* 키캡: 표시 글자가 바뀌면 remount되어 ds-keycap 전환 동작이 돈다 */}
+              <span key={capFor(def)} className="ds-keycap">
+                {capFor(def)}
+              </span>
             </button>
           ))}
         </div>
       ))}
-      <div className="flex gap-2">
-        <span className="flex-[0.5]" aria-hidden="true" />
-        {[...KEYBOARD_ROWS[2]].map((char) => (
-          <button key={char} type="button" className={key} disabled={disabled} onPointerDown={keepFocus} onClick={() => emit(char)}>
-            {shift ? char.toUpperCase() : char}
-          </button>
-        ))}
-        <span className="flex-[0.5]" aria-hidden="true" />
-      </div>
-      <div className="flex gap-2">
+      <div className="flex gap-1.5">
+        <span className="flex-[4]" aria-hidden="true" />
         <button
           type="button"
-          className={cx(key, 'flex-[1.5]', shift && 'border-ink bg-ink text-on-ink hover:bg-ink-hover')}
-          disabled={disabled}
-          aria-pressed={shift}
-          onPointerDown={keepFocus}
-          onClick={() => setShift((current) => !current)}
-        >
-          ⇧
-        </button>
-        {[...KEYBOARD_ROWS[3]].map((char) => (
-          <button key={char} type="button" className={key} disabled={disabled} onPointerDown={keepFocus} onClick={() => emit(char)}>
-            {shift ? char.toUpperCase() : char}
-          </button>
-        ))}
-        <button
-          type="button"
-          className={cx(key, 'flex-[1.5]')}
-          disabled={disabled}
-          aria-label="한 글자 지우기"
-          onPointerDown={keepFocus}
-          onClick={onBackspace}
-        >
-          ⌫
-        </button>
-      </div>
-      <div className="flex gap-2">
-        {['@', '.', '-', '_'].map((char) => (
-          <button key={char} type="button" className={cx(key, 'max-w-16')} disabled={disabled} onPointerDown={keepFocus} onClick={() => onKey(char)}>
-            {char}
-          </button>
-        ))}
-        <button
-          type="button"
-          className={cx(key, 'flex-[4]')}
+          className="flex min-h-12 flex-[7] items-center justify-center border border-line-strong bg-layer text-label font-medium hover:bg-sunken disabled:cursor-not-allowed disabled:text-disabled"
           disabled={disabled}
           aria-label="띄어쓰기"
           onPointerDown={keepFocus}
-          onClick={() => onKey(' ')}
+          onClick={() => {
+            onKey(' ');
+            if (shift) setShift(false);
+          }}
         >
           스페이스
         </button>
+        <span className="flex-[4]" aria-hidden="true" />
       </div>
     </div>
   );

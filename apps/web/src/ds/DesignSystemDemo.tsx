@@ -250,10 +250,11 @@ export default function DesignSystemDemo() {
             <Keypad
               onDigit={(digit) => setPin((current) => (current + digit).slice(0, 6))}
               onBackspace={() => setPin((current) => current.slice(0, -1))}
+              onClear={() => setPin('')}
             />
             <p className="text-caption text-soft">
               칸을 탭하면 하드웨어 키보드로도 입력된다(one-time-code 자동완성 지원).
-              키패드 키 60px, 지우기는 ⌫ 하나.
+              키패드 키 60px, 하단 전체 지움 · 0 · ⌫.
             </p>
           </Panel>
         </Section>
@@ -274,9 +275,10 @@ export default function DesignSystemDemo() {
               onBackspace={() => setEmail((current) => current.slice(0, -1))}
             />
             <p className="text-caption text-soft">
-              입력창은 inputMode=&quot;none&quot;이라 OS 소프트 키보드가 뜨지 않고, 화상 키보드는
-              포커스를 뺏지 않아 물리 키보드와 동시에 동작한다. 숫자열 상시 노출, Shift는 원샷.
-              한글 문구 입력은 물리 키보드용(조합 입력은 후속).
+              65% 배열에서 Ctrl/Alt/Fn/Win/화살표만 뺐다. 입력창은 inputMode=&quot;none&quot;이라
+              OS 소프트 키보드가 뜨지 않고, 화상 키보드는 포커스를 뺏지 않아 물리 키보드와
+              동시에 동작한다. Shift는 원샷 — 숫자·기호 키캡도 함께 바뀐다(⇧를 눌러 보세요).
+              Caps는 글자만 지속. 한글 문구 입력은 물리 키보드용(조합 입력은 후속).
             </p>
           </Panel>
         </Section>
