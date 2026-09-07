@@ -19,16 +19,7 @@ import {
 } from './components';
 
 /* 디자인 시스템 v2 데모 — 개발 전용(#design 해시). 운영 번들에는 들어가지 않는다.
-   목적: 실제 화면 적용 전에 토큰·컴포넌트만 따로 최종 검수한다.
-   상단 스위처로 cool(기본)/warm(현행 종이색)/dark 세 배경안을 비교한다. */
-
-type Theme = 'cool' | 'warm' | 'dark';
-
-const THEMES: { value: Theme; label: string }[] = [
-  { value: 'cool', label: '1 쿨 그레이' },
-  { value: 'warm', label: '2 종이색' },
-  { value: 'dark', label: '3 다크' },
-];
+   목적: 토큰·컴포넌트를 실제 화면과 따로 검수한다. 테마는 쿨 그레이 단일(2026-09-07 확정). */
 
 /* 시맨틱 토큰 → 데모에 보여줄 이름 순서. ds.css의 --ds-* 와 1:1 */
 const COLOR_TOKENS = [
@@ -78,7 +69,6 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export default function DesignSystemDemo() {
   const rootRef = useRef<HTMLDivElement>(null);
-  const [theme, setTheme] = useState<Theme>('cool');
   const [resolved, setResolved] = useState<Record<string, string>>({});
   const [frame, setFrame] = useState<'basic' | 'date'>('basic');
   const [brightness, setBrightness] = useState(0);
@@ -88,7 +78,7 @@ export default function DesignSystemDemo() {
   const [email, setEmail] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // 검수용: 현재 테마에서 각 토큰이 실제로 어떤 값인지 hex로 표시한다.
+  // 검수용: 각 토큰이 실제로 어떤 값인지 hex로 표시한다.
   useEffect(() => {
     if (!rootRef.current) return;
     const style = getComputedStyle(rootRef.current);
@@ -97,22 +87,17 @@ export default function DesignSystemDemo() {
         COLOR_TOKENS.map((name) => [name, style.getPropertyValue(`--ds-${name}`).trim()]),
       ),
     );
-  }, [theme]);
+  }, []);
 
   return (
-    <div
-      ref={rootRef}
-      className="ds-root min-h-screen bg-bg font-sans text-body text-text"
-      data-ds-theme={theme}
-    >
+    <div ref={rootRef} className="ds-root min-h-screen bg-bg font-sans text-body text-text">
       <header className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-4 border-b border-line bg-bg px-8 py-4">
         <div>
           <h1 className="text-heading font-bold">YS Fourcut 디자인 시스템 v2</h1>
           <p className="text-caption text-soft">
-            모서리 0 · 경계선 구획 · Stone 중립 + 셔터 버밀리언 · Wanted Sans
+            쿨 그레이(확정) · 모서리 0 · 경계선 구획 · Stone 중립 + 셔터 버밀리언 · Wanted Sans
           </p>
         </div>
-        <SegmentedControl label="배경안 비교" options={THEMES} value={theme} onChange={setTheme} />
       </header>
 
       <main className="mx-auto flex max-w-5xl flex-col gap-12 px-8 py-10">

@@ -80,10 +80,11 @@
   --color-viewer-deep: var(--ds-viewer-deep);
 }
 
-/* ── 원시 팔레트 + 시맨틱 기본값(cool 테마) ─────────────────────
+/* ── 원시 팔레트 + 시맨틱 값 (쿨 그레이 — 2026-09-07 확정 단일 테마) ──
    큐레이션 기준: 중립은 stone 계열(살짝 웜한 그레이) 한 램프로 통일해 영수증 종이·
    버밀리언과 온도를 맞추고, 상태색(ok/warn/danger)은 같은 명도 스텝에서 뽑아
-   채도·무게를 일치시킨다. 임의 값 조합 금지 — 새 색은 반드시 램프에서 고른다. */
+   채도·무게를 일치시킨다. 임의 값 조합 금지 — 새 색은 반드시 램프에서 고른다.
+   실제 화면(booth.css)이 쓰는 styles/tokens.css는 이 값의 사본 — 함께 바꾼다. */
 .ds-root {
   /* stone 중립 램프 (웜 그레이) */
   --ds-gray-0: #ffffff;
@@ -127,54 +128,6 @@
   --ds-focus: var(--ds-gray-100);
   --ds-viewer: var(--ds-gray-70);
   --ds-viewer-deep: var(--ds-gray-80);
-}
-
-/* warm — 현재 운영 중인 종이색 정체성 유지안 (07/12번 값 재사용) */
-.ds-root[data-ds-theme='warm'] {
-  --ds-bg: #f4efe4;
-  --ds-layer: #fdfbf5;
-  --ds-sunken: #ebe4d4;
-  --ds-field: #fdfbf5;
-  --ds-text: #211d16;
-  --ds-soft: #5c564b;
-  --ds-disabled: #8a8375;
-  --ds-line: #d8d0bd;
-  --ds-line-strong: #b7ae97;
-  --ds-ink: #211d16;
-  --ds-ink-hover: #3a352b;
-  --ds-on-ink: #fdfbf5;
-  --ds-accent-tint: #f7e3da;
-  --ds-danger-tint: #f7ddd5;
-  --ds-focus: #211d16;
-  --ds-viewer: #57524a;
-  --ds-viewer-deep: #45413a;
-}
-
-/* dark — 짙은 stone 키오스크안. primary 버튼은 반전(밝은 면 + 짙은 글자) */
-.ds-root[data-ds-theme='dark'] {
-  --ds-bg: var(--ds-gray-100);
-  --ds-layer: var(--ds-gray-90);
-  --ds-sunken: var(--ds-gray-80);
-  --ds-field: var(--ds-gray-90);
-  --ds-text: var(--ds-gray-10);
-  --ds-soft: var(--ds-gray-40);
-  --ds-disabled: var(--ds-gray-60);
-  --ds-line: var(--ds-gray-80);
-  --ds-line-strong: var(--ds-gray-60);
-  --ds-ink: var(--ds-gray-10);
-  --ds-ink-hover: var(--ds-gray-30);
-  --ds-on-ink: var(--ds-gray-100);
-  --ds-accent: var(--ds-red-30);
-  --ds-accent-hover: var(--ds-red-40);
-  --ds-accent-tint: #3c241c;
-  --ds-on-accent: var(--ds-gray-100);
-  --ds-ok: #34d399; /* emerald-400 */
-  --ds-warn: #fbbf24; /* amber-400 */
-  --ds-danger: #f87171; /* red-400 */
-  --ds-danger-tint: #3f1d1d;
-  --ds-focus: var(--ds-gray-10);
-  --ds-viewer: var(--ds-gray-80);
-  --ds-viewer-deep: var(--ds-gray-90);
 }
 
 /* ── 데모 공존용 최소 리셋 ─────────────────────────────────────
