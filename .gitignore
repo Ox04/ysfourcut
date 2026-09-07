@@ -25,3 +25,6 @@ tests/print-host/**/obj/
 .mcp.json
 .env
 .env.*
+
+# 중첩 위치에 생기는 OMC 런타임 상태도 차단 (skills 예외는 루트만 유지)
+**/.omc/
